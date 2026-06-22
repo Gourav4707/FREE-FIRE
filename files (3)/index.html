@@ -1,0 +1,2334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FF Tournament – Squad Registration</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --navy: #0a0a1f;
+      --navy2: #0f0f2e;
+      --navy3: #13133a;
+      --purple: #7c3aed;
+      --violet: #8b5cf6;
+      --lavender: #a78bfa;
+      --accent: #c084fc;
+      --gold: #f59e0b;
+      --gold2: #fbbf24;
+      --text: #f1f0ff;
+      --muted: #8b89b8;
+      --muted2: #5b5980;
+      --border: rgba(139, 92, 246, 0.18);
+      --border2: rgba(139, 92, 246, 0.38);
+      --glow: rgba(124, 58, 237, 0.3);
+      --r: 14px;
+      --r-sm: 8px;
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--navy);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden
+    }
+
+    /* ── CANVAS BG ── */
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none
+    }
+
+    /* ── PAGE WRAP ── */
+    .wrap {
+      position: relative;
+      z-index: 1
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: rgba(10, 10, 31, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 62px;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      text-decoration: none
+    }
+
+    .nav-logo-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--purple), var(--violet));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 0 18px rgba(124, 58, 237, 0.5);
+      transform-style: preserve-3d;
+      transition: transform 0.3s;
+    }
+
+    .nav-logo-icon:hover {
+      transform: rotateY(20deg) rotateX(-10deg) scale(1.1)
+    }
+
+    .nav-logo .conf {
+      font-style: italic;
+      background: linear-gradient(135deg, var(--lavender), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 4px
+    }
+
+    .nav-tab {
+      padding: 7px 18px;
+      border-radius: var(--r-sm);
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid transparent;
+      cursor: pointer;
+      color: var(--muted);
+      background: transparent;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .nav-tab:hover {
+      color: var(--text);
+      background: rgba(139, 92, 246, 0.1);
+      border-color: var(--border)
+    }
+
+    .nav-tab.active {
+      color: var(--lavender);
+      border-color: var(--border2);
+      background: rgba(139, 92, 246, 0.15)
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .nav-wa {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 16px;
+      background: rgba(37, 211, 102, 0.12);
+      border: 1px solid rgba(37, 211, 102, 0.3);
+      border-radius: var(--r-sm);
+      color: #25d366;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .nav-wa:hover {
+      background: rgba(37, 211, 102, 0.2);
+      transform: translateY(-1px)
+    }
+
+    /* ── PAGE ── */
+    .page {
+      display: none
+    }
+
+    .page.active {
+      display: block
+    }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      padding: 5rem 1.5rem 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-glow {
+      position: absolute;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.2) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(139, 92, 246, 0.12);
+      border: 1px solid var(--border2);
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--lavender);
+      padding: 5px 16px;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: pulse-dot 1.5s infinite
+    }
+
+    @keyframes pulse-dot {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1)
+      }
+
+      50% {
+        opacity: 0.5;
+        transform: scale(0.7)
+      }
+    }
+
+    .hero h1 {
+      font-size: clamp(30px, 5.5vw, 56px);
+      font-weight: 900;
+      line-height: 1.08;
+      margin-bottom: 1rem;
+      letter-spacing: -0.04em;
+    }
+
+    .hero h1 .hi {
+      background: linear-gradient(135deg, var(--lavender), var(--accent), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-sub {
+      color: var(--muted);
+      font-size: 15px;
+      margin-bottom: 2.5rem;
+      max-width: 460px;
+      margin-left: auto;
+      margin-right: auto
+    }
+
+    /* 3D TROPHY */
+    .trophy-wrap {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 2rem;
+      perspective: 400px;
+      cursor: pointer;
+    }
+
+    .trophy-3d {
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      animation: trophy-float 3s ease-in-out infinite;
+      font-size: 72px;
+      line-height: 100px;
+      text-align: center;
+      filter: drop-shadow(0 0 20px rgba(245, 158, 11, 0.6));
+      transition: transform 0.3s;
+    }
+
+    .trophy-wrap:hover .trophy-3d {
+      animation: none;
+      transform: rotateY(360deg) scale(1.15)
+    }
+
+    @keyframes trophy-float {
+
+      0%,
+      100% {
+        transform: translateY(0) rotateY(0deg) rotateX(5deg)
+      }
+
+      50% {
+        transform: translateY(-10px) rotateY(15deg) rotateX(-5deg)
+      }
+    }
+
+    .hero-meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 20px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 14px 28px;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+    }
+
+    .hero-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px
+    }
+
+    .hero-meta-item .ml {
+      color: var(--muted)
+    }
+
+    .hero-meta-item .mv {
+      font-weight: 700;
+      color: var(--text)
+    }
+
+    .hero-meta-divider {
+      width: 1px;
+      height: 20px;
+      background: var(--border)
+    }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap
+    }
+
+    .stat-pill {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 18px 26px;
+      text-align: center;
+      min-width: 110px;
+      transition: all 0.3s;
+      cursor: default;
+      transform-style: preserve-3d;
+    }
+
+    .stat-pill:hover {
+      transform: translateY(-4px) rotateX(8deg);
+      border-color: var(--border2);
+      box-shadow: 0 12px 30px rgba(124, 58, 237, 0.2), 0 0 0 1px var(--border2);
+    }
+
+    .stat-pill .sv {
+      font-size: 30px;
+      font-weight: 900;
+      color: var(--lavender);
+      line-height: 1
+    }
+
+    .stat-pill .sl {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em
+    }
+
+    /* ── COUNTDOWN ── */
+    .countdown-section {
+      max-width: 560px;
+      margin: 0 auto 2rem;
+      padding: 0 1.5rem;
+    }
+
+    .countdown-card {
+      background: var(--navy2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 1.25rem 1.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .countdown-card::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .countdown-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem
+    }
+
+    .countdown-timer {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap
+    }
+
+    .cd-unit {
+      text-align: center;
+      min-width: 64px
+    }
+
+    .cd-num {
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 10px 14px;
+      display: block;
+      transform-style: preserve-3d;
+      transition: transform 0.3s;
+      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .cd-unit:hover .cd-num {
+      transform: translateY(-2px) rotateX(10deg)
+    }
+
+    .cd-lbl {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600
+    }
+
+    .cd-sep {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--muted2);
+      line-height: 1;
+      padding-top: 10px;
+      align-self: flex-start
+    }
+
+    /* ── PRIZE POOL ── */
+    .prize-section {
+      max-width: 680px;
+      margin: 0 auto 2rem;
+      padding: 0 1.5rem
+    }
+
+    .prize-card {
+      background: var(--navy2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .prize-card::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .prize-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem
+    }
+
+    .prize-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .prize-total {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--gold)
+    }
+
+    .prizes-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px
+    }
+
+    .prize-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 14px;
+      text-align: center;
+      transform-style: preserve-3d;
+      transition: all 0.3s;
+    }
+
+    .prize-item:hover {
+      transform: translateY(-4px) rotateX(6deg);
+      border-color: var(--border2);
+      box-shadow: 0 10px 24px rgba(124, 58, 237, 0.15)
+    }
+
+    .prize-item:nth-child(1) {
+      border-color: rgba(255, 215, 0, 0.3);
+      background: rgba(255, 215, 0, 0.04)
+    }
+
+    .prize-item:nth-child(2) {
+      border-color: rgba(192, 192, 192, 0.3);
+      background: rgba(192, 192, 192, 0.03)
+    }
+
+    .prize-item:nth-child(3) {
+      border-color: rgba(205, 127, 50, 0.3);
+      background: rgba(205, 127, 50, 0.03)
+    }
+
+    .prize-medal {
+      font-size: 26px;
+      margin-bottom: 6px
+    }
+
+    .prize-place {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px
+    }
+
+    .prize-amount {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--text)
+    }
+
+    .prize-item:nth-child(1) .prize-amount {
+      color: var(--gold)
+    }
+
+    /* ── RULES ── */
+    .rules-section {
+      max-width: 680px;
+      margin: 0 auto 2rem;
+      padding: 0 1.5rem
+    }
+
+    .rules-card {
+      background: var(--navy2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+    }
+
+    .rules-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s;
+    }
+
+    .rules-header:hover {
+      background: rgba(255, 255, 255, 0.02)
+    }
+
+    .rules-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 700
+    }
+
+    .rules-chevron {
+      font-size: 12px;
+      color: var(--muted);
+      transition: transform 0.3s
+    }
+
+    .rules-chevron.open {
+      transform: rotate(180deg)
+    }
+
+    .rules-body {
+      display: none;
+      padding: 0 1.5rem 1.25rem;
+      border-top: 1px solid var(--border)
+    }
+
+    .rules-body.open {
+      display: block
+    }
+
+    .rule-item {
+      display: flex;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      font-size: 13px;
+    }
+
+    .rule-item:last-child {
+      border-bottom: none
+    }
+
+    .rule-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      flex-shrink: 0;
+      background: rgba(139, 92, 246, 0.2);
+      border: 1px solid var(--border2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--lavender);
+    }
+
+    .rule-text {
+      color: var(--muted);
+      line-height: 1.5;
+      flex: 1
+    }
+
+    .rule-text strong {
+      color: var(--text)
+    }
+
+    /* ── SLOTS ── */
+    .slots-wrap {
+      max-width: 680px;
+      margin: 0 auto 2rem;
+      padding: 0 1.5rem
+    }
+
+    .slots-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px
+    }
+
+    .slots-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em
+    }
+
+    .slots-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px
+    }
+
+    .slot {
+      border-radius: var(--r-sm);
+      padding: 10px 6px;
+      text-align: center;
+      font-size: 10px;
+      font-weight: 700;
+      border: 1px solid transparent;
+      transition: all 0.25s;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transform-style: preserve-3d;
+    }
+
+    .slot .sn {
+      display: block;
+      font-size: 16px;
+      font-weight: 800;
+      margin-bottom: 2px;
+      line-height: 1
+    }
+
+    .slot.open {
+      background: rgba(139, 92, 246, 0.1);
+      border-color: var(--border2);
+      color: var(--lavender);
+      cursor: default;
+    }
+
+    .slot.open:hover {
+      transform: translateY(-3px) rotateX(10deg);
+      box-shadow: 0 8px 20px rgba(124, 58, 237, 0.2);
+      background: rgba(139, 92, 246, 0.2);
+    }
+
+    .slot.taken {
+      background: rgba(255, 255, 255, 0.02);
+      border-color: rgba(255, 255, 255, 0.05);
+      color: #1e1e40
+    }
+
+    .slot.taken .sn {
+      color: #1e1e40
+    }
+
+    .slot.last2 {
+      background: rgba(239, 68, 68, 0.08);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #fca5a5
+    }
+
+    .slot.last2 .sn {
+      color: #fca5a5
+    }
+
+    .low-slots-warn {
+      display: none;
+      margin-top: 10px;
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      border-radius: var(--r-sm);
+      padding: 10px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #fca5a5;
+      text-align: center;
+    }
+
+    .low-slots-warn.show {
+      display: block
+    }
+
+    /* ── FORM ── */
+    .form-wrap {
+      max-width: 660px;
+      margin: 0 auto 4rem;
+      padding: 0 1.5rem
+    }
+
+    .setup-notice {
+      background: rgba(245, 158, 11, 0.06);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: var(--r-sm);
+      padding: 12px 16px;
+      font-size: 12px;
+      color: #fbbf24;
+      margin-bottom: 1.25rem;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      line-height: 1.6;
+    }
+
+    .card {
+      background: var(--navy2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      transform-style: preserve-3d;
+      transition: box-shadow 0.3s;
+    }
+
+    .card:hover {
+      box-shadow: 0 20px 60px rgba(124, 58, 237, 0.12)
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--violet), transparent);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.75rem;
+      flex-wrap: wrap;
+      gap: 8px
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .card-badge {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--lavender);
+      background: rgba(139, 92, 246, 0.12);
+      border: 1px solid var(--border2);
+      border-radius: 999px;
+      padding: 3px 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .team-field {
+      margin-bottom: 1.5rem
+    }
+
+    .team-field label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 6px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase
+    }
+
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1rem;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border)
+    }
+
+    .players-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 1.5rem
+    }
+
+    .player-block {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 14px 16px;
+      transition: all 0.2s;
+      transform-style: preserve-3d;
+    }
+
+    .player-block:focus-within {
+      border-color: var(--border2);
+      box-shadow: 0 4px 20px rgba(124, 58, 237, 0.1);
+      transform: translateZ(4px);
+    }
+
+    .player-block-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px
+    }
+
+    .player-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      background: rgba(139, 92, 246, 0.18);
+      border: 1px solid var(--border2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--lavender);
+      flex-shrink: 0;
+    }
+
+    .player-role {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text)
+    }
+
+    .captain-badge {
+      font-size: 9px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--purple), var(--violet));
+      color: white;
+      border-radius: 4px;
+      padding: 2px 7px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .p-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px
+    }
+
+    .p-fields-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px
+    }
+
+    .fg {
+      display: flex;
+      flex-direction: column;
+      gap: 5px
+    }
+
+    .fg label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase
+    }
+
+    input[type=text],
+    input[type=tel],
+    input[type=password] {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      color: var(--text);
+      border-radius: var(--r-sm);
+      padding: 9px 12px;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      width: 100%;
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--violet);
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+      transform: translateY(-1px);
+    }
+
+    input::placeholder {
+      color: #2a2a50
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--purple), var(--violet));
+      color: white;
+      border: none;
+      border-radius: var(--r-sm);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+      transform-style: preserve-3d;
+      box-shadow: 0 4px 0 rgba(109, 28, 237, 0.6), 0 8px 20px rgba(124, 58, 237, 0.3);
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 0 rgba(109, 28, 237, 0.5), 0 14px 30px rgba(124, 58, 237, 0.35);
+    }
+
+    .submit-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 rgba(109, 28, 237, 0.6), 0 4px 10px rgba(124, 58, 237, 0.2);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none
+    }
+
+    .alert {
+      display: none;
+      border-radius: var(--r-sm);
+      padding: 12px 15px;
+      font-size: 13px;
+      margin-top: 1rem;
+      align-items: flex-start;
+      gap: 10px;
+      line-height: 1.5;
+    }
+
+    .alert.show {
+      display: flex
+    }
+
+    .alert.success {
+      background: rgba(16, 185, 129, 0.08);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.25)
+    }
+
+    .alert.error {
+      background: rgba(239, 68, 68, 0.08);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.25)
+    }
+
+    /* ── CONFIRMATION MODAL ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .modal-overlay.show {
+      opacity: 1;
+      pointer-events: all
+    }
+
+    .modal {
+      background: var(--navy2);
+      border: 1px solid var(--border2);
+      border-radius: var(--r);
+      padding: 2rem;
+      max-width: 480px;
+      width: 100%;
+      transform: translateY(30px) scale(0.96);
+      transition: transform 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .modal-overlay.show .modal {
+      transform: translateY(0) scale(1)
+    }
+
+    .modal::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), var(--violet), transparent);
+    }
+
+    .modal-icon {
+      font-size: 48px;
+      text-align: center;
+      margin-bottom: 1rem;
+      animation: modal-bounce 0.5s ease
+    }
+
+    @keyframes modal-bounce {
+      0% {
+        transform: scale(0)
+      }
+
+      60% {
+        transform: scale(1.2)
+      }
+
+      100% {
+        transform: scale(1)
+      }
+    }
+
+    .modal h3 {
+      font-size: 18px;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 0.5rem
+    }
+
+    .modal p {
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+      margin-bottom: 1.25rem
+    }
+
+    .modal-squad-name {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--lavender);
+      text-align: center;
+      margin-bottom: 1.25rem;
+      background: rgba(139, 92, 246, 0.1);
+      border: 1px solid var(--border2);
+      border-radius: var(--r-sm);
+      padding: 10px;
+    }
+
+    .modal-players {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 1.25rem
+    }
+
+    .modal-player {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 9px 12px;
+      font-size: 13px;
+    }
+
+    .modal-player .mp-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: rgba(139, 92, 246, 0.2);
+      color: var(--lavender);
+      font-size: 10px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .modal-player .mp-name {
+      font-weight: 600;
+      flex: 1
+    }
+
+    .modal-player .mp-uid {
+      font-size: 11px;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums
+    }
+
+    .modal-wa {
+      width: 100%;
+      padding: 12px;
+      background: rgba(37, 211, 102, 0.12);
+      border: 1px solid rgba(37, 211, 102, 0.3);
+      border-radius: var(--r-sm);
+      color: #25d366;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      transition: all 0.2s;
+    }
+
+    .modal-wa:hover {
+      background: rgba(37, 211, 102, 0.2)
+    }
+
+    .modal-close {
+      width: 100%;
+      padding: 10px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text)
+    }
+
+    /* ── ADMIN ── */
+    .admin-wrap {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem
+    }
+
+    .lock-outer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 62px)
+    }
+
+    .lock-card {
+      background: var(--navy2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 2.5rem 2rem;
+      text-align: center;
+      max-width: 380px;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      transform-style: preserve-3d;
+      box-shadow: 0 20px 60px rgba(124, 58, 237, 0.1);
+    }
+
+    .lock-card::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--violet), transparent);
+    }
+
+    .lock-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: rgba(139, 92, 246, 0.15);
+      border: 1px solid var(--border2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin: 0 auto 1.25rem;
+      box-shadow: 0 0 20px rgba(124, 58, 237, 0.2);
+      animation: lock-float 2s ease-in-out infinite;
+    }
+
+    @keyframes lock-float {
+
+      0%,
+      100% {
+        transform: translateY(0)
+      }
+
+      50% {
+        transform: translateY(-6px)
+      }
+    }
+
+    .lock-card h2 {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 8px
+    }
+
+    .lock-card p {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 1.5rem
+    }
+
+    .lock-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px
+    }
+
+    .lock-form input {
+      text-align: center;
+      letter-spacing: 0.1em
+    }
+
+    .lock-btn {
+      padding: 12px;
+      background: linear-gradient(135deg, var(--purple), var(--violet));
+      color: white;
+      border: none;
+      border-radius: var(--r-sm);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+      box-shadow: 0 4px 0 rgba(109, 28, 237, 0.6);
+    }
+
+    .lock-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 rgba(109, 28, 237, 0.5)
+    }
+
+    .lock-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 0 rgba(109, 28, 237, 0.6)
+    }
+
+    .pw-err {
+      color: #fca5a5;
+      font-size: 12px;
+      margin-top: 6px;
+      display: none
+    }
+
+    .pw-err.show {
+      display: block
+    }
+
+    .adm-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 12px
+    }
+
+    .adm-header h2 {
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: -0.02em
+    }
+
+    .adm-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .adm-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid var(--border2);
+      border-radius: var(--r-sm);
+      background: rgba(139, 92, 246, 0.08);
+      color: var(--lavender);
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+    }
+
+    .adm-btn:hover {
+      background: rgba(139, 92, 246, 0.18);
+      transform: translateY(-1px)
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 1.5rem
+    }
+
+    .s-card {
+      background: var(--navy2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 16px 18px;
+      transition: all 0.3s;
+      transform-style: preserve-3d;
+    }
+
+    .s-card:hover {
+      transform: translateY(-4px) rotateX(5deg);
+      border-color: var(--border2);
+      box-shadow: 0 12px 30px rgba(124, 58, 237, 0.15)
+    }
+
+    .s-card .sl {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600
+    }
+
+    .s-card .sv {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--lavender);
+      line-height: 1
+    }
+
+    .squad-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 14px
+    }
+
+    .sq-card {
+      background: var(--navy2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      transition: all 0.3s;
+      transform-style: preserve-3d;
+    }
+
+    .sq-card:hover {
+      transform: translateY(-4px) rotateX(3deg);
+      border-color: var(--border2);
+      box-shadow: 0 16px 40px rgba(124, 58, 237, 0.12)
+    }
+
+    .sq-head {
+      background: rgba(139, 92, 246, 0.08);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sq-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.01em
+    }
+
+    .sq-num {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 8px;
+    }
+
+    .sq-time {
+      font-size: 10px;
+      color: var(--muted);
+      padding: 6px 16px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .sq-body {
+      padding: 8px 0
+    }
+
+    .sq-player {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      transition: background 0.15s
+    }
+
+    .sq-player:hover {
+      background: rgba(255, 255, 255, 0.02)
+    }
+
+    .sq-player+.sq-player {
+      border-top: 1px solid rgba(255, 255, 255, 0.04)
+    }
+
+    .sp-role {
+      font-size: 9px;
+      font-weight: 700;
+      border-radius: 4px;
+      padding: 2px 7px;
+      min-width: 52px;
+      text-align: center;
+      flex-shrink: 0;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .sp-role.capt {
+      background: rgba(139, 92, 246, 0.18);
+      color: var(--lavender);
+      border: 1px solid var(--border2)
+    }
+
+    .sp-role.mem {
+      background: rgba(255, 255, 255, 0.03);
+      color: #2a2a50;
+      border: 1px solid rgba(255, 255, 255, 0.05)
+    }
+
+    .sp-info {
+      flex: 1;
+      min-width: 0
+    }
+
+    .sp-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .sp-sub {
+      font-size: 11px;
+      color: var(--muted)
+    }
+
+    .sp-phone {
+      font-size: 11px;
+      color: var(--muted);
+      flex-shrink: 0
+    }
+
+    .no-squads {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 4rem;
+      color: var(--muted);
+      font-size: 14px
+    }
+
+    /* ── PARTICLES ── */
+    .particle {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      background: var(--violet);
+      opacity: 0;
+      animation: particle-rise linear infinite;
+    }
+
+    @keyframes particle-rise {
+      0% {
+        opacity: 0;
+        transform: translateY(0) scale(0)
+      }
+
+      10% {
+        opacity: 0.6
+      }
+
+      90% {
+        opacity: 0.1
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-100vh) scale(0.5)
+      }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:580px) {
+      .p-fields {
+        grid-template-columns: 1fr
+      }
+
+      .p-fields-2 {
+        grid-template-columns: 1fr
+      }
+
+      .slots-grid {
+        grid-template-columns: repeat(4, 1fr)
+      }
+
+      .prizes-grid {
+        grid-template-columns: 1fr
+      }
+
+      .hero h1 {
+        font-size: 28px
+      }
+
+      nav {
+        padding: 0 1rem
+      }
+
+      .nav-logo span.lt {
+        display: none
+      }
+
+      .hero-meta {
+        flex-direction: column;
+        gap: 12px
+      }
+
+      .hero-meta-divider {
+        display: none
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- 3D PARTICLE CANVAS -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- CONFIRMATION MODAL -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+      <div class="modal-icon">🏆</div>
+      <h3>Squad Registered!</h3>
+      <p>Your squad has been locked in. Here's your confirmation:</p>
+      <div class="modal-squad-name" id="modal-squad-name">–</div>
+      <div class="modal-players" id="modal-players"></div>
+      <a class="modal-wa" id="modal-wa" href="#" target="_blank">💬 Join WhatsApp Group</a>
+      <button class="modal-close" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <!-- NAV -->
+    <nav>
+      <div class="nav-logo">
+        <div class="nav-logo-icon">🎮</div>
+        <span class="lt">FF</span>&nbsp;<span class="conf">Tournament</span>
+      </div>
+      <div class="nav-tabs">
+        <button class="nav-tab active" onclick="showPage('register',this)">⚔️ Register</button>
+        <button class="nav-tab" onclick="showPage('admin',this)">🛡️ Admin</button>
+      </div>
+      <div class="nav-right">
+        <a class="nav-wa" href="https://chat.whatsapp.com/GbrBHOigukKAYZtuhRrXgC" target="_blank">💬 WhatsApp Group</a>
+      </div>
+    </nav>
+
+    <!-- REGISTER PAGE -->
+    <div id="page-register" class="page active">
+
+      <div class="hero">
+        <div class="hero-glow"></div>
+        <div class="trophy-wrap">
+          <div class="trophy-3d">🏆</div>
+        </div>
+        <div class="hero-eyebrow"><span class="live-dot"></span> Registration Open</div>
+        <h1>The <span class="hi">Free Fire</span><br>Tournament.</h1>
+        <p class="hero-sub">Register your full squad of 4 players. Only 12 squad slots — don't miss your chance at
+          glory.</p>
+        <div class="hero-meta">
+          <div class="hero-meta-item"><span class="ml">Format</span><span class="mv">4v4 Squad</span></div>
+          <div class="hero-meta-divider"></div>
+          <div class="hero-meta-item"><span class="ml">Squads</span><span class="mv">12 Max</span></div>
+          <div class="hero-meta-divider"></div>
+          <div class="hero-meta-item"><span class="ml">Mode</span><span class="mv">Battle Royale</span></div>
+          <div class="hero-meta-divider"></div>
+          <div class="hero-meta-item"><span class="ml">Entry</span><span class="mv">₹150/Squad</span></div>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-pill">
+            <div class="sv" id="hero-squads">–</div>
+            <div class="sl">Squads In</div>
+          </div>
+          <div class="stat-pill">
+            <div class="sv">12</div>
+            <div class="sl">Total Slots</div>
+          </div>
+          <div class="stat-pill">
+            <div class="sv" id="hero-slots">–</div>
+            <div class="sl">Slots Left</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COUNTDOWN -->
+      <div class="countdown-section">
+        <div class="countdown-card">
+          <div class="countdown-label">⏱️ Tournament Starts In</div>
+          <div class="countdown-timer">
+            <div class="cd-unit"><span class="cd-num" id="cd-d">00</span>
+              <div class="cd-lbl">Days</div>
+            </div>
+            <div class="cd-sep">:</div>
+            <div class="cd-unit"><span class="cd-num" id="cd-h">00</span>
+              <div class="cd-lbl">Hours</div>
+            </div>
+            <div class="cd-sep">:</div>
+            <div class="cd-unit"><span class="cd-num" id="cd-m">00</span>
+              <div class="cd-lbl">Minutes</div>
+            </div>
+            <div class="cd-sep">:</div>
+            <div class="cd-unit"><span class="cd-num" id="cd-s">00</span>
+              <div class="cd-lbl">Seconds</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRIZE POOL -->
+      <div class="prize-section">
+        <div class="prize-card">
+          <div class="prize-header">
+            <div class="prize-title">🏅 Prize Pool</div>
+            <div class="prize-total">Total: ₹1550</div>
+          </div>
+          <div class="prizes-grid">
+            <div class="prize-item">
+              <div class="prize-medal">🥇</div>
+              <div class="prize-place">1st Place</div>
+              <div class="prize-amount">₹600</div>
+            </div>
+            <div class="prize-item">
+              <div class="prize-medal">🥈</div>
+              <div class="prize-place">2nd Place</div>
+              <div class="prize-amount">₹400</div>
+            </div>
+            <div class="prize-item">
+              <div class="prize-medal">🥉</div>
+              <div class="prize-place">3rd Place</div>
+              <div class="prize-amount">₹300</div>
+            </div>
+            <div class="prize-item">
+              <div class="prize-medal">🥉</div>
+              <div class="prize-place">4th Place</div>
+              <div class="prize-amount">₹150</div>
+            </div>
+            <div class="prize-item">
+              <div class="prize-medal">🥉</div>
+              <div class="prize-place">5th Place</div>
+              <div class="prize-amount">₹100</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RULES -->
+      <div class="rules-section">
+        <div class="rules-card">
+          <div class="rules-header" onclick="toggleRules()">
+            <div class="rules-header-left">📋 Tournament Rules</div>
+            <div class="rules-chevron" id="rules-chevron">▼</div>
+          </div>
+          <div class="rules-body" id="rules-body">
+            <div class="rule-item">
+              <div class="rule-num">1</div>
+              <div class="rule-text"><strong>Squad size:</strong> Exactly 4 players per squad. No substitutions after
+                registration.</div>
+            </div>
+            <div class="rule-item">
+              <div class="rule-num">2</div>
+              <div class="rule-text"><strong>Valid UID:</strong> All player Free Fire UIDs must be real and active. Fake
+                UIDs = disqualification.</div>
+            </div>
+            <div class="rule-item">
+              <div class="rule-num">3</div>
+              <div class="rule-text"><strong>No hacking:</strong> Use of any third-party tools, mods, or hacks results
+                in immediate ban.</div>
+            </div>
+            <div class="rule-item">
+              <div class="rule-num">4</div>
+              <div class="rule-text"><strong>Join group:</strong> Captain must join the WhatsApp group before the
+                tournament day.</div>
+            </div>
+            <div class="rule-item">
+              <div class="rule-num">5</div>
+              <div class="rule-text"><strong>Punctuality:</strong> Squads must be online 15 minutes before match time.
+                No late joins.</div>
+            </div>
+            <div class="rule-item">
+              <div class="rule-num">6</div>
+              <div class="rule-text"><strong>Respect:</strong> Toxic behavior, trash talk, or disrespect towards
+                opponents = penalty or disqualification.</div>
+            </div>
+            <div class="rule-item">
+              <div class="rule-num">7</div>
+              <div class="rule-text"><strong>Organizer decision is final:</strong> All disputes will be resolved by the
+                tournament organizer. No appeals after ruling.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLOT GRID -->
+      <div class="slots-wrap">
+        <div class="slots-header">
+          <span class="slots-title">Squad Slots</span>
+          <span class="slots-count" id="slots-label">0 / 12 filled</span>
+        </div>
+        <div class="slots-grid" id="slots-grid"></div>
+        <div class="low-slots-warn" id="low-slots-warn">⚠️ Hurry! Only <span id="low-slots-num">2</span> slots
+          remaining!</div>
+      </div>
+
+      <!-- FORM -->
+      <div class="form-wrap">
+        <div class="setup-notice" id="setup-notice">
+          ⚠️ <span><strong>Setup required:</strong> Replace <code>YOUR_SCRIPT_URL_HERE</code> in the script section with
+            your Google Apps Script URL. Also replace <code>https://chat.whatsapp.com/GbrBHOigukKAYZtuhRrXgC</code> with
+            your actual WhatsApp group invite link.</span>
+        </div>
+        <div class="card">
+          <div class="card-top">
+            <div class="card-title">🏆 Squad Registration</div>
+            <div class="card-badge">4 players per squad</div>
+          </div>
+          <div class="team-field">
+            <label>Squad / Team Name *</label>
+            <input type="text" id="f-team" placeholder="e.g. Shadow Wolves" autocomplete="off" />
+          </div>
+          <div class="section-divider">Players</div>
+          <div class="players-list" id="players-list"></div>
+          <div class="alert error" id="form-err">⚠️ <span id="form-err-text"></span></div>
+          <div class="payment-section"
+            style="margin-top:12px;padding:8px;background:var(--navy2);border:1px solid var(--border);border-radius:var(--r-sm);text-align:center;">
+            <img src="file:///C:/Users/DELL/Downloads/WhatsApp%20Image%202026-06-22%20at%203.48.47%20PM.jpeg"
+              alt="Payment QR Code" class="qr-placeholder"
+              style="display:block;margin:auto;width:100%;max-width:200px;" />
+            <div style="margin-top:4px;">
+              <label for="payment-screenshot" style="font-size:12px;color:var(--muted);">Upload payment screenshot
+                *</label>
+              <input type="file" id="payment-screenshot" accept="image/*" style="margin-top:4px;" />
+            </div>
+            <button type="button" class="pay-confirm-btn" id="pay-confirm-btn" style="margin-top:8px;" disabled>I have
+              completed payment</button>
+          </div>
+          <button class="submit-btn" id="submit-btn" onclick="submitReg()">
+            <span id="submit-label">🚀 Register Squad</span>
+          </button>
+          <div class="alert success" id="form-ok" style="display:none"></div>
+        </div>
+      </div>
+    </div><!-- /page-register -->
+
+    <!-- ADMIN PAGE -->
+    <div id="page-admin" class="page">
+      <div class="admin-wrap">
+        <div id="admin-lock">
+          <div class="lock-outer">
+            <div class="lock-card">
+              <div class="lock-icon">🔒</div>
+              <h2>Admin Access</h2>
+              <p>Enter the password to view all registered squads and player data.</p>
+              <div class="payment-section">
+                <!-- QR image removed from admin page -->
+                <button type="button" class="pay-confirm-btn" id="pay-confirm-btn">I have completed payment</button>
+                <div class="payment-screenshot" style="margin-top:10px;">
+                  <label for="payment-screenshot" style="font-size:12px;color:var(--muted);">Upload payment screenshot
+                    *</label>
+                  <input type="file" id="payment-screenshot" accept="image/*" style="margin-top:4px;" />
+                </div>
+              </div>
+              <div class="lock-form">
+                <input type="password" id="admin-pw" placeholder="Enter password"
+                  onkeydown="if(event.key==='Enter')unlockAdmin()" />
+                <button class="lock-btn" onclick="unlockAdmin()">Unlock Panel</button>
+              </div>
+              <div class="pw-err" id="pw-err">❌ Incorrect password. Try again.</div>
+            </div>
+          </div>
+        </div>
+        <div id="admin-panel" style="display:none">
+          <div class="adm-header">
+            <h2>🛡️ Admin Panel</h2>
+            <div class="adm-actions">
+              <button class="adm-btn" onclick="exportCSV()">📥 Export CSV</button>
+              <button class="adm-btn" onclick="refreshSquads()">🔄 Refresh</button>
+              <input type="number" min="1" max="12" id="delete-squad-input" placeholder="Squad #"
+                style="width:70px;margin-left:8px;padding:4px;background:var(--navy2);color:var(--text);border:1px solid var(--border);border-radius:var(--r-sm);font-size:12px;" />
+              <button class="adm-btn" onclick="removeTeam()" style="margin-left:4px;">🗑️ Delete Squad</button>
+            </div>
+          </div>
+          <div class="stats-row">
+            <div class="s-card">
+              <div class="sl">Squads In</div>
+              <div class="sv" id="adm-squads">–</div>
+            </div>
+            <div class="s-card">
+              <div class="sl">Slots Left</div>
+              <div class="sv" id="adm-remain">–</div>
+            </div>
+            <div class="s-card">
+              <div class="sl">Total Players</div>
+              <div class="sv" id="adm-players">–</div>
+            </div>
+          </div>
+          <div class="squad-grid" id="squad-grid">
+            <div class="no-squads">Loading squads…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /wrap -->
+
+  <script>
+    // ── CONFIG ─────────────────────────────────────────────────
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz3K25AP7kwXGltrb2ifXrdSkDPzeydcyjt1N1hwGp06fzrYx-fRR3aFfY8k5zJdT5J/exec';
+    const ADMIN_PW = '@Gourav47';
+    const MAX_SQUADS = 12;
+    const TOURNAMENT_DATE = new Date('2026-06-27T18:00:00'); // Change this date!
+    const WHATSAPP_LINK = 'https://chat.whatsapp.com/GbrBHOigukKAYZtuhRrXgC';
+    const PRIZE_POOL = '₹5,000'; // Edit prize amounts in HTML above too
+    // ───────────────────────────────────────────────────────────
+
+    let squadData = [];
+    let paymentConfirmed = false;
+
+    /* ── 3D PARTICLE BACKGROUND ── */
+    (function () {
+      const canvas = document.getElementById('bg-canvas');
+      const ctx = canvas.getContext('2d');
+      let W, H, stars = [], nebulas = [];
+
+      function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+      resize(); window.addEventListener('resize', resize);
+
+      for (let i = 0; i < 120; i++) stars.push({
+        x: Math.random() * 2000, y: Math.random() * 1200,
+        r: Math.random() * 1.5 + 0.3, speed: Math.random() * 0.3 + 0.05,
+        opacity: Math.random() * 0.6 + 0.1,
+        color: ['#a78bfa', '#c084fc', '#8b5cf6', '#ffffff'][Math.floor(Math.random() * 4)]
+      });
+
+      for (let i = 0; i < 4; i++) nebulas.push({
+        x: Math.random() * 2000, y: Math.random() * 1200,
+        r: Math.random() * 200 + 100,
+        color: Math.random() > 0.5 ? 'rgba(124,58,237,' : 'rgba(139,92,246,',
+        opacity: Math.random() * 0.05 + 0.02, speed: Math.random() * 0.1 + 0.02
+      });
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        nebulas.forEach(n => {
+          const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r);
+          g.addColorStop(0, n.color + (n.opacity) + ')');
+          g.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.fillStyle = g; ctx.beginPath();
+          ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2); ctx.fill();
+          n.x += n.speed; if (n.x > W + n.r) n.x = -n.r;
+        });
+        stars.forEach(s => {
+          ctx.beginPath();
+          ctx.arc(s.x % W, s.y % H, s.r, 0, Math.PI * 2);
+          ctx.fillStyle = s.color;
+          ctx.globalAlpha = s.opacity;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+          s.x += s.speed * 0.3; s.y += s.speed * 0.1;
+        });
+        requestAnimationFrame(draw);
+      }
+      draw();
+
+      /* Mouse parallax */
+      document.addEventListener('mousemove', e => {
+        const mx = (e.clientX / window.innerWidth - 0.5) * 0.5;
+        const my = (e.clientY / window.innerHeight - 0.5) * 0.5;
+        stars.forEach((s, i) => {
+          s.x += mx * (i % 3 + 1) * 0.2;
+          s.y += my * (i % 3 + 1) * 0.2;
+        });
+      });
+    })();
+
+    /* ── 3D CARD TILT ── */
+    document.addEventListener('mousemove', e => {
+      document.querySelectorAll('.stat-pill, .s-card, .sq-card').forEach(el => {
+        const r = el.getBoundingClientRect();
+        const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+        const dx = (e.clientX - cx) / (r.width / 2);
+        const dy = (e.clientY - cy) / (r.height / 2);
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 1.8) {
+          el.style.transform = `perspective(800px) rotateY(${dx * 6}deg) rotateX(${-dy * 6}deg) translateZ(4px)`;
+        } else {
+          el.style.transform = '';
+        }
+      });
+    });
+
+    /* ── COUNTDOWN ── */
+    function updateCountdown() {
+      const now = new Date(), diff = TOURNAMENT_DATE - now;
+      if (diff <= 0) {
+        ['cd-d', 'cd-h', 'cd-m', 'cd-s'].forEach(id => document.getElementById(id).textContent = '00');
+        return;
+      }
+      const d = Math.floor(diff / 86400000),
+        h = Math.floor((diff % 86400000) / 3600000),
+        m = Math.floor((diff % 3600000) / 60000),
+        s = Math.floor((diff % 60000) / 1000);
+      const p = n => String(n).padStart(2, '0');
+      const ids = ['cd-d', 'cd-h', 'cd-m', 'cd-s'], vals = [d, h, m, s];
+      ids.forEach((id, i) => {
+        const el = document.getElementById(id);
+        const nv = p(vals[i]);
+        if (el.textContent !== nv) {
+          el.style.transform = 'rotateX(90deg) translateZ(4px)';
+          setTimeout(() => { el.textContent = nv; el.style.transform = ''; }, 150);
+        }
+      });
+    }
+    updateCountdown(); setInterval(updateCountdown, 1000);
+
+    /* ── RULES TOGGLE ── */
+    function toggleRules() {
+      const b = document.getElementById('rules-body');
+      const c = document.getElementById('rules-chevron');
+      b.classList.toggle('open');
+      c.classList.toggle('open');
+    }
+
+    /* ── BUILD FORM ── */
+    function buildForm() {
+      const list = document.getElementById('players-list');
+      list.innerHTML = '';
+      for (let i = 0; i < 4; i++) {
+        const isC = i === 0;
+        list.innerHTML += `
+      <div class="player-block">
+        <div class="player-block-head">
+          <div class="player-num">${i + 1}</div>
+          <div class="player-role">Player ${i + 1}</div>
+          ${isC ? '<span class="captain-badge">Captain</span>' : ''}
+        </div>
+        <div class="p-fields">
+          <div class="fg"><label>Full Name *</label><input type="text" id="p${i}-name" placeholder="Real name" autocomplete="off"/></div>
+          <div class="fg"><label>In-Game Name *</label><input type="text" id="p${i}-ign" placeholder="IGN" autocomplete="off"/></div>
+          <div class="fg"><label>FF UID *</label><input type="text" id="p${i}-uid" placeholder="UID" autocomplete="off"/></div>
+        </div>
+        ${isC ? `<div class="p-fields-2" style="margin-top:10px"><div class="fg"><label>Captain Phone *</label><input type="tel" id="p0-phone" placeholder="Phone number" autocomplete="off"/></div></div>` : ''}
+      </div>`;
+      }
+    }
+
+    /* ── SLOTS ── */
+    function buildSlots(filled) {
+      const g = document.getElementById('slots-grid');
+      g.innerHTML = '';
+      const remaining = MAX_SQUADS - filled;
+      for (let i = 1; i <= MAX_SQUADS; i++) {
+        const taken = i <= filled;
+        const isLast = (remaining <= 2 && !taken && remaining > 0);
+        g.innerHTML += `<div class="slot ${taken ? 'taken' : isLast ? 'last2' : 'open'}">
+      <span class="sn">${i}</span>${taken ? 'Taken' : isLast ? '⚡ Last' : 'Open'}</div>`;
+      }
+      document.getElementById('slots-label').textContent = `${filled} / ${MAX_SQUADS} filled`;
+      const warn = document.getElementById('low-slots-warn');
+      if (remaining <= 3 && remaining > 0) {
+        document.getElementById('low-slots-num').textContent = remaining;
+        warn.classList.add('show');
+      } else {
+        warn.classList.remove('show');
+      }
+    }
+
+    function updateHero(n) {
+      document.getElementById('hero-squads').textContent = n;
+      document.getElementById('hero-slots').textContent = Math.max(0, MAX_SQUADS - n);
+    }
+
+    function validURL() { return SCRIPT_URL && SCRIPT_URL !== 'YOUR_SCRIPT_URL_HERE'; }
+
+    async function fetchCount() {
+      buildSlots(0); updateHero(0);
+      if (!validURL()) return;
+      try {
+        const r = await fetch(SCRIPT_URL);
+        const d = await r.json();
+        if (d.ok) { buildSlots(d.count); updateHero(d.count); }
+      } catch (e) { }
+    }
+
+    /* ── SHOW PAGE ── */
+    function showPage(p, btn) {
+      document.querySelectorAll('.page').forEach(e => e.classList.remove('active'));
+      document.querySelectorAll('.nav-tab').forEach(e => e.classList.remove('active'));
+      document.getElementById('page-' + p).classList.add('active');
+      btn.classList.add('active');
+      if (p === 'register') fetchCount();
+    }
+
+    /* ── SUBMIT ── */
+    function showErr(msg) { document.getElementById('form-err-text').textContent = msg; document.getElementById('form-err').classList.add('show') }
+    function hideErr() { document.getElementById('form-err').classList.remove('show') }
+
+    async function submitReg() {
+      hideErr();
+      document.getElementById('form-ok').style.display = 'none';
+      if (!validURL()) { showErr('Add your Google Apps Script URL to activate registration.'); return; }
+
+      // Ensure payment is confirmed and screenshot uploaded
+      const screenshotInput = document.getElementById('payment-screenshot');
+      if (!paymentConfirmed) {
+        showErr('Please complete the payment before registering.');
+        return;
+      }
+      if (!screenshotInput || !screenshotInput.files || screenshotInput.files.length === 0) {
+        showErr('Please upload a payment screenshot before registering.');
+        return;
+      }
+
+      const team = document.getElementById('f-team').value.trim();
+      if (!team) { showErr('Please enter your squad name.'); return; }
+
+      const players = [];
+      for (let i = 0; i < 4; i++) {
+        const name = document.getElementById(`p${i}-name`).value.trim();
+        const ign = document.getElementById(`p${i}-ign`).value.trim();
+        const uid = document.getElementById(`p${i}-uid`).value.trim();
+        const phone = i === 0 ? document.getElementById('p0-phone').value.trim() : '';
+        if (!name || !ign || !uid) { showErr(`Fill all fields for Player ${i + 1}.`); return; }
+        if (!/^\d{6,12}$/.test(uid)) { showErr(`Player ${i + 1}: UID must be 6–12 digits.`); return; }
+        if (i === 0 && !/^\d{7,15}$/.test(phone)) { showErr('Enter a valid phone number for the captain.'); return; }
+        players.push({ name, ign, uid, phone });
+      }
+      const uids = players.map(p => p.uid);
+      if (new Set(uids).size !== uids.length) { showErr('Two players have the same UID.'); return; }
+
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      document.getElementById('submit-label').textContent = 'Registering…';
+
+      try {
+        const formData = new FormData();
+        formData.append('team', team);
+        formData.append('players', JSON.stringify(players));
+        formData.append('screenshot', screenshotInput.files[0]);
+        const r = await fetch(SCRIPT_URL, { method: 'POST', body: formData });
+        const d = await r.json();
+        if (d.ok) {
+          document.getElementById('f-team').value = '';
+          for (let i = 0; i < 4; i++) {
+            document.getElementById(`p${i}-name`).value = '';
+            document.getElementById(`p${i}-ign`).value = '';
+            document.getElementById(`p${i}-uid`).value = '';
+            if (i === 0) document.getElementById('p0-phone').value = '';
+          }
+          screenshotInput.value = '';
+          paymentConfirmed = false;
+          document.getElementById('pay-confirm-btn').disabled = false;
+          document.getElementById('pay-confirm-btn').textContent = 'I have completed payment';
+          buildSlots(d.count); updateHero(d.count);
+          showConfirmModal(team, players);
+        } else {
+          showErr(d.error || 'Something went wrong. Please try again.');
+        }
+      } catch (e) {
+        showErr('Connection error. Check your internet and try again.');
+      } finally {
+        btn.disabled = false;
+        document.getElementById('submit-label').textContent = '🚀 Register Squad';
+      }
+    }
+
+    /* ── MODAL ── */
+    function showConfirmModal(team, players) {
+      document.getElementById('modal-squad-name').textContent = team;
+      document.getElementById('modal-players').innerHTML = players.map((p, i) => `
+    <div class="modal-player">
+      <div class="mp-num">${i + 1}</div>
+      <div class="mp-name">${esc(p.name)} <span style="color:var(--muted);font-weight:400">(${esc(p.ign)})</span></div>
+      <div class="mp-uid">${esc(p.uid)}</div>
+    </div>`).join('');
+      const waEl = document.getElementById('modal-wa');
+      if (WHATSAPP_LINK && WHATSAPP_LINK.startsWith('https://')) {
+        waEl.href = WHATSAPP_LINK; waEl.style.display = 'flex';
+      } else {
+        waEl.style.display = 'none';
+      }
+      document.getElementById('modal').classList.add('show');
+    }
+    function closeModal() { document.getElementById('modal').classList.remove('show'); }
+    document.getElementById('modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+
+    /* ── ADMIN ── */
+    function unlockAdmin() {
+      if (document.getElementById('admin-pw').value === ADMIN_PW) {
+        document.getElementById('admin-lock').style.display = 'none';
+        document.getElementById('admin-panel').style.display = 'block';
+        refreshSquads();
+      } else {
+        document.getElementById('pw-err').classList.add('show');
+        document.getElementById('admin-pw').value = '';
+      }
+    }
+
+    async function refreshSquads() {
+      document.getElementById('squad-grid').innerHTML = '<div class="no-squads">Loading from Google Sheets…</div>';
+      if (!validURL()) { document.getElementById('squad-grid').innerHTML = '<div class="no-squads">Script URL not configured.</div>'; return; }
+      try {
+        const r = await fetch(SCRIPT_URL + '?full=1');
+        const d = await r.json();
+        squadData = d.squads || [];
+        renderSquads();
+      } catch (e) {
+        document.getElementById('squad-grid').innerHTML = '<div class="no-squads">⚠️ Could not load data.</div>';
+      }
+    }
+
+    function deleteSquad(index) {
+      if (!confirm('Are you sure you want to delete this squad?')) return;
+      fetch(SCRIPT_URL + '?delete=' + index, { method: 'GET' })
+        .then(r => r.json())
+        .then(d => {
+          if (d.ok) {
+            refreshSquads();
+            fetchCount(); // update front page counts
+          } else {
+            alert('Failed to delete squad: ' + (d.error || 'unknown error'));
+          }
+        })
+        .catch(() => alert('Network error while deleting squad'));
+    }
+
+    // Delete squad by number entered in admin input
+    function removeTeam() {
+      const input = document.getElementById('delete-squad-input');
+      const num = parseInt(input.value, 10);
+      if (isNaN(num) || num < 1) {
+        alert('Please enter a valid squad number to delete.');
+        return;
+      }
+      // Convert to zero‑based index
+      const index = num - 1;
+      deleteSquad(index);
+      input.value = '';
+    }
+
+
+
+    function renderSquads() {
+      const n = squadData.length;
+      document.getElementById('adm-squads').textContent = n;
+      document.getElementById('adm-remain').textContent = Math.max(0, MAX_SQUADS - n);
+      document.getElementById('adm-players').textContent = n * 4;
+      if (!n) { document.getElementById('squad-grid').innerHTML = '<div class="no-squads">🎯 No squads yet.</div>'; return; }
+      document.getElementById('squad-grid').innerHTML = squadData.map((sq, si) => `
+    <div class="sq-card">
+      <div class="sq-head">
+        <span class="sq-name">${esc(sq.team)}</span>
+        <span class="sq-num">Squad #${si + 1}</span>
+      </div>
+      <div class="sq-time">${esc(sq.time)}</div>
+      <div class="sq-body">
+        ${sq.players.map((p, pi) => `
+          <div class="sq-player">
+            <span class="sp-role ${pi === 0 ? 'capt' : 'mem'}">${pi === 0 ? 'Captain' : 'P' + (pi + 1)}</span>
+            <div class="sp-info">
+              <div class="sp-name">${esc(p.name)}</div>
+              <div class="sp-sub">@${esc(p.ign)} · <span style="font-family:monospace;font-size:11px;color:#2a2a50">${esc(p.uid)}</span></div>
+            </div>
+            ${pi === 0 ? `<span class="sp-phone">${esc(p.phone)}</span>` : ''}
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+    }
+
+    function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }
+
+    function exportCSV() {
+      if (!squadData.length) { alert('No squads to export yet.'); return; }
+      let csv = 'Squad No,Team Name,Role,Name,IGN,UID,Phone,Registered At\n';
+      squadData.forEach((sq, si) => {
+        sq.players.forEach((p, pi) => {
+          csv += `${si + 1},"${sq.team}","${pi === 0 ? 'Captain' : 'Player ' + (pi + 1)}","${p.name}","${p.ign}","${p.uid}","${p.phone || ''}","${sq.time}"\n`;
+        });
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'ff_squads.csv'; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    /* ── INIT ── */
+    buildForm(); fetchCount();
+    // Initialize payment confirmation button
+    const payBtn = document.getElementById('pay-confirm-btn');
+    if (payBtn) {
+      // Disable by default; will be enabled when screenshot is selected
+      payBtn.disabled = true;
+      // Enable button when a screenshot file is chosen
+      const screenshotInput = document.getElementById('payment-screenshot');
+      if (screenshotInput) {
+        screenshotInput.addEventListener('change', () => {
+          payBtn.disabled = !(screenshotInput.files && screenshotInput.files.length > 0);
+        });
+      }
+      // Handle payment confirmation click
+      payBtn.addEventListener('click', () => {
+        paymentConfirmed = true;
+        payBtn.disabled = true;
+        payBtn.textContent = 'Payment Confirmed ✅';
+      });
+    }
+    if (validURL()) document.getElementById('setup-notice').style.display = 'none';
+  </script>
+</body>
+
+</html>
